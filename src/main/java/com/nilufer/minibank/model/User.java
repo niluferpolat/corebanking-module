@@ -1,10 +1,11 @@
 package com.nilufer.minibank.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,12 +13,14 @@ import java.util.UUID;
 @Table(name = "users")
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class User extends Auditable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class User extends Auditable implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name="user_name",nullable = false, unique = true)
+    @Column(name="username",nullable = false, unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
@@ -26,4 +29,9 @@ public class User extends Auditable {
 
     @OneToMany(mappedBy = "user")
     private List<Account> accounts;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
 }
