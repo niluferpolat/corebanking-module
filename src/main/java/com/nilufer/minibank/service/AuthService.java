@@ -2,6 +2,7 @@ package com.nilufer.minibank.service;
 
 import com.nilufer.minibank.dto.RegisterRequest;
 import com.nilufer.minibank.dto.AuthResponse;
+import com.nilufer.minibank.exception.DuplicateValueException;
 import com.nilufer.minibank.model.User;
 import com.nilufer.minibank.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already taken");
+            throw new DuplicateValueException("Username is already taken");
         }
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateValueException("Email already exists");
         }
 
         User newUser = User.builder()
