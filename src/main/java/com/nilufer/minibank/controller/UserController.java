@@ -1,6 +1,7 @@
 package com.nilufer.minibank.controller;
 
 import com.nilufer.minibank.dto.AuthResponse;
+import com.nilufer.minibank.dto.LoginRequest;
 import com.nilufer.minibank.dto.RegisterRequest;
 import com.nilufer.minibank.service.AuthService;
 import jakarta.validation.Valid;
@@ -21,5 +22,10 @@ public class UserController {
     @PostMapping(value = "/register")
     public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.register(registerRequest));
+    }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity<AuthResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest){
+        return ResponseEntity.ok(authService.login(loginRequest));
     }
 }

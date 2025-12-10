@@ -31,4 +31,11 @@ public class GlobalExceptionHandler {
         });
         return errors;
     }
+
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", exception.getMessage()));
+    }
 }

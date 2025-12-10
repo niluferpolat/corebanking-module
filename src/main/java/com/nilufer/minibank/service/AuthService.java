@@ -1,13 +1,17 @@
 package com.nilufer.minibank.service;
 
+import com.nilufer.minibank.dto.LoginRequest;
 import com.nilufer.minibank.dto.RegisterRequest;
 import com.nilufer.minibank.dto.AuthResponse;
 import com.nilufer.minibank.exception.DuplicateValueException;
+import com.nilufer.minibank.exception.NotFoundException;
 import com.nilufer.minibank.model.User;
 import com.nilufer.minibank.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,21 @@ public class AuthService {
 
         userRepository.save(newUser);
         String token = jwtService.generateToken(newUser);
+        return new AuthResponse(token);
+    }
+
+    public AuthResponse login(LoginRequest loginRequest) {
+        Optional<User> userOptional = userRepository.findByEmailOrUsername(loginRequest.getUsernameOrEmail());
+        if (!userOptional.isPresent()) {
+            throw new NotFoundException("User could not be found");
+        }
+
+        User user = userOptional.get();
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new NotFoundException("Invalid password");
+        }
+
+        String token = jwtService.generateToken(user);
         return new AuthResponse(token);
     }
 }
