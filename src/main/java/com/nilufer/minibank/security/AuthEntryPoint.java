@@ -1,4 +1,4 @@
-package com.nilufer.minibank.service;
+package com.nilufer.minibank.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

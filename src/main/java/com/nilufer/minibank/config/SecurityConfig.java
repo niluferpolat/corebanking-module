@@ -1,6 +1,6 @@
 package com.nilufer.minibank.config;
 
-import com.nilufer.minibank.service.JwtAuthenticationFilter;
+import com.nilufer.minibank.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

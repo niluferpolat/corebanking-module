@@ -1,6 +1,5 @@
-package com.nilufer.minibank.service;
+package com.nilufer.minibank.security;
 
-import com.nilufer.minibank.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

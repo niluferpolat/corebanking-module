@@ -1,5 +1,6 @@
 package com.nilufer.minibank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,7 +29,8 @@ public class User extends Auditable implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Account> accounts;
 
     @Override
