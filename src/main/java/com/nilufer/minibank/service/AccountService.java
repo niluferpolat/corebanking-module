@@ -4,7 +4,7 @@ import com.nilufer.minibank.dto.AccountRequest;
 import com.nilufer.minibank.dto.AccountResponse;
 import com.nilufer.minibank.dto.SearchAccountRequest;
 import com.nilufer.minibank.exception.DuplicateValueException;
-import com.nilufer.minibank.exception.NotFoundException;
+import com.nilufer.minibank.exception.NotFoundNorValidException;
 import com.nilufer.minibank.model.Account;
 import com.nilufer.minibank.model.User;
 import com.nilufer.minibank.repository.AccountRepository;
@@ -60,11 +60,11 @@ public class AccountService {
 
         //get account infos for updating
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Account not found"));
+                .orElseThrow(() -> new NotFoundNorValidException("Account not found"));
 
         //if you are not this account's user, you shall NOT PASS :D
         if (!account.getUser().getId().equals(user.getId())) {
-            throw new NotFoundException("You are not allowed to update this account");
+            throw new NotFoundNorValidException("You are not allowed to update this account");
         }
 
         account.setName(accountRequest.getAccountName());
@@ -77,10 +77,10 @@ public class AccountService {
         User user = getCurrentUser();
 
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Account not found"));
+                .orElseThrow(() -> new NotFoundNorValidException("Account not found"));
 
         if (!account.getUser().getId().equals(user.getId())) {
-            throw new NotFoundException("You are not allowed to delete this account");
+            throw new NotFoundNorValidException("You are not allowed to delete this account");
         }
 
         accountRepository.delete(account);
@@ -91,10 +91,10 @@ public class AccountService {
         User user = getCurrentUser();
 
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Account not found"));
+                .orElseThrow(() -> new NotFoundNorValidException("Account not found"));
 
         if (!account.getUser().getId().equals(user.getId())) {
-            throw new NotFoundException("You are not allowed to see this account's details");
+            throw new NotFoundNorValidException("You are not allowed to see this account's details");
         }
         return new AccountResponse(account.getName(), account.getNumber(), account.getBalance());
     }
@@ -108,12 +108,12 @@ public class AccountService {
     private User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
-            throw new NotFoundException("User not authenticated");
+            throw new NotFoundNorValidException("User not authenticated");
         }
 
         Object principal = auth.getPrincipal();
         if (!(principal instanceof User)) {
-            throw new NotFoundException("Invalid user details");
+            throw new NotFoundNorValidException("Invalid user details");
         }
         return (User) auth.getPrincipal();
     }

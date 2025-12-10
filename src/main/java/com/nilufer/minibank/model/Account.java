@@ -1,5 +1,6 @@
 package com.nilufer.minibank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nilufer.minibank.utils.AccountNumberGeneratorUtil;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,7 @@ public class Account extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @PrePersist

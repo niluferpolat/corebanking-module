@@ -4,7 +4,7 @@ import com.nilufer.minibank.dto.LoginRequest;
 import com.nilufer.minibank.dto.RegisterRequest;
 import com.nilufer.minibank.dto.AuthResponse;
 import com.nilufer.minibank.exception.DuplicateValueException;
-import com.nilufer.minibank.exception.NotFoundException;
+import com.nilufer.minibank.exception.NotFoundNorValidException;
 import com.nilufer.minibank.model.User;
 import com.nilufer.minibank.repository.UserRepository;
 import com.nilufer.minibank.security.JwtService;
@@ -44,12 +44,12 @@ public class AuthService {
     public AuthResponse login(LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository.findByEmailOrUsername(loginRequest.getUsernameOrEmail());
         if (!userOptional.isPresent()) {
-            throw new NotFoundException("User could not be found");
+            throw new NotFoundNorValidException("User could not be found");
         }
 
         User user = userOptional.get();
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new NotFoundException("Invalid password");
+            throw new NotFoundNorValidException("Invalid password");
         }
 
         String token = jwtService.generateToken(user);
