@@ -73,6 +73,32 @@ public class AccountService {
         return "Updated successfully";
     }
 
+    public String deleteAccount(UUID id) {
+        User user = getCurrentUser();
+
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Account not found"));
+
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new NotFoundException("You are not allowed to delete this account");
+        }
+
+        accountRepository.delete(account);
+        return "Deleted successfully";
+    }
+
+    public AccountResponse getAccountDetails(UUID id) {
+        User user = getCurrentUser();
+
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Account not found"));
+
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new NotFoundException("You are not allowed to see this account's details");
+        }
+        return new AccountResponse(account.getName(), account.getNumber(), account.getBalance());
+    }
+
     //to make jpa repository work, i made incoming null variables into empty string
     private String blankParameter(String parameter) {
         return Optional.ofNullable(parameter).orElse("");

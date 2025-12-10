@@ -34,4 +34,13 @@ public class AccountController {
         return ResponseEntity.ok(accountService.updateAccount(id, accountRequest));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAccount(@PathVariable UUID id) {
+        return ResponseEntity.ok(accountService.deleteAccount(id));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountResponse> getAccountDetails(@PathVariable UUID id){
+        return ResponseEntity.ok(accountService.getAccountDetails(id));
+    }
 }
