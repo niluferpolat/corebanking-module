@@ -15,6 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -67,6 +70,20 @@ public class TransactionService {
         }
 
         return transaction;
+    }
+
+    public List<Transaction> showTransactionHistories(UUID accountId) {
+        User currentUser = getCurrentUser();
+
+        //account exists or not
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new NotFoundNorValidException("Account not found"));
+
+        //authenticated user and account user is the same check
+        if (!account.getUser().getId().equals(currentUser.getId())) {
+            throw new NotFoundNorValidException("You are not allowed to view this account's transactions");
+        }
+        return transactionRepository.findByFrom_IdOrTo_Id(account.getId(), account.getId());
     }
 
     //Check authentication and retrieve the authenticated user

@@ -25,11 +25,19 @@ public class SecurityConfig {
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
 
+    //added swagger urls
+    public static final String[] SWAGGER_PATHS = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                                .requestMatchers(SWAGGER_PATHS).permitAll()
                                 .anyRequest().authenticated()
                 ).exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session ->
