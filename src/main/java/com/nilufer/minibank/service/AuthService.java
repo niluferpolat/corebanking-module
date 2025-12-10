@@ -7,6 +7,7 @@ import com.nilufer.minibank.exception.DuplicateValueException;
 import com.nilufer.minibank.exception.NotFoundException;
 import com.nilufer.minibank.model.User;
 import com.nilufer.minibank.repository.UserRepository;
+import com.nilufer.minibank.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
