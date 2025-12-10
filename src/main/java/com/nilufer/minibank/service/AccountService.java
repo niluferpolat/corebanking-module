@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class AccountService {
         return new AccountResponse(savedAccount.getName(), savedAccount.getNumber(), savedAccount.getBalance());
     }
 
+    //user can see own accounts with this jpa query
     public List<AccountResponse> searchMyAccounts(SearchAccountRequest searchAccountRequest) {
         User user = getCurrentUser();
         return accountRepository
@@ -53,11 +55,30 @@ public class AccountService {
 
     }
 
+    public String updateAccount(UUID id, AccountRequest accountRequest) {
+        User user = getCurrentUser();
+
+        //get account infos for updating
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Account not found"));
+
+        //if you are not this account's user, you shall NOT PASS :D
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new NotFoundException("You are not allowed to update this account");
+        }
+
+        account.setName(accountRequest.getAccountName());
+        accountRepository.save(account);
+
+        return "Updated successfully";
+    }
+
     //to make jpa repository work, i made incoming null variables into empty string
     private String blankParameter(String parameter) {
         return Optional.ofNullable(parameter).orElse("");
     }
 
+    //Check authentication and retrieve the authenticated user
     private User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
