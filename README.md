@@ -68,7 +68,7 @@ VALUES (
     NOW()
 );
 ```
-This allows instant login and testing.
+This allows instant login and testing. ***Password!123***
 
 # 3️⃣ Run the Backend
 ```bash
