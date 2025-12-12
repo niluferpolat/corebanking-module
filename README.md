@@ -1,5 +1,8 @@
 # 🏦 MiniBank Backend (Spring Boot)
 
+### Deployed URL
+https://corebanking-module-production.up.railway.app/swagger-ui/index.html
+
 MiniBank Backend is a secure REST API built with Spring Boot and PostgreSQL.  
 It handles user authentication, account management, fund transfers, and transaction history tracking.
 
@@ -76,5 +79,3 @@ API will start at http://localhost:8080/
 📖 API Documentation (Swagger)
 The swagger address is 👉 http://localhost:8080/swagger-ui/index.html
 
-# 4️⃣ Deployed URL
-https://corebanking-module-production.up.railway.app/swagger-ui/index.html
