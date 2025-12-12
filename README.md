@@ -71,7 +71,12 @@ VALUES (
 This allows instant login and testing. 
 Username and password:
 **test_rockerfeller**
-***Password!123***
+***Password.123***
+
+Second User is:
+
+**niluferr**
+**Password!123**
 
 # 3️⃣ Run the Backend
 ```bash
