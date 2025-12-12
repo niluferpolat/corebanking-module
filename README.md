@@ -43,7 +43,7 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 
-in src/main/resources/data.sql you can find the sql query for initial test user.
+src/main/resources/data.sql already includes an example user and account:
 
 ```bash
 --added initial user and its account for testing
@@ -65,11 +65,13 @@ VALUES (
     NOW()
 );
 ```
-Paste this query in your db ui for having an initial user and account.
+This allows instant login and testing.
 
 # 3️⃣ Run the Backend
 ```bash
 mvn spring-boot:run
 ```
 API will start at http://localhost:8080/
+
+📖 API Documentation (Swagger)
 The swagger address is 👉 http://localhost:8080/swagger-ui/index.html
