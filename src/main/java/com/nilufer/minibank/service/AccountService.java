@@ -1,5 +1,6 @@
 package com.nilufer.minibank.service;
 
+import com.nilufer.minibank.dto.AccountDetailResponse;
 import com.nilufer.minibank.dto.AccountRequest;
 import com.nilufer.minibank.dto.AccountResponse;
 import com.nilufer.minibank.dto.SearchAccountRequest;
@@ -8,6 +9,7 @@ import com.nilufer.minibank.exception.NotFoundNorValidException;
 import com.nilufer.minibank.model.Account;
 import com.nilufer.minibank.model.User;
 import com.nilufer.minibank.repository.AccountRepository;
+import com.nilufer.minibank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,15 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
+
+    public List<AccountResponse> getAllAccounts() {
+        User user = getCurrentUser();
+        return accountRepository.findAllByUser_Id(user.getId())
+                .stream()
+                .map(AccountResponse::of)
+                .toList();
+    }
 
     public AccountResponse addAccount(AccountRequest accountRequest) {
         User user = getCurrentUser();
@@ -40,7 +51,7 @@ public class AccountService {
                 .build();
         Account savedAccount = accountRepository.save(newAccount);
 
-        return new AccountResponse(savedAccount.getName(), savedAccount.getNumber(), savedAccount.getBalance());
+        return new AccountResponse(savedAccount.getId(), savedAccount.getName(), savedAccount.getNumber());
     }
 
     //user can see own accounts with this jpa query
@@ -55,7 +66,7 @@ public class AccountService {
 
     }
 
-    public String updateAccount(UUID id, AccountRequest accountRequest) {
+    public AccountResponse updateAccount(UUID id, AccountRequest accountRequest) {
         User user = getCurrentUser();
 
         //get account infos for updating
@@ -68,9 +79,9 @@ public class AccountService {
         }
 
         account.setName(accountRequest.getAccountName());
-        accountRepository.save(account);
+        Account updatedAccount = accountRepository.save(account);
 
-        return "Updated successfully";
+        return new AccountResponse(updatedAccount.getId(), updatedAccount.getName(), updatedAccount.getNumber());
     }
 
     public String deleteAccount(UUID id) {
@@ -82,12 +93,20 @@ public class AccountService {
         if (!account.getUser().getId().equals(user.getId())) {
             throw new NotFoundNorValidException("You are not allowed to delete this account");
         }
+        boolean hasTransactions = transactionRepository.existsByFrom_Id(id) || transactionRepository.existsByTo_Id(id);
 
+        if (hasTransactions) {
+            throw new NotFoundNorValidException(
+                    "This account has related transactions and cannot be deleted."
+            );
+        }
         accountRepository.delete(account);
+
         return "Deleted successfully";
     }
 
-    public AccountResponse getAccountDetails(UUID id) {
+
+    public AccountDetailResponse getAccountDetails(UUID id) {
         User user = getCurrentUser();
 
         Account account = accountRepository.findById(id)
@@ -96,7 +115,13 @@ public class AccountService {
         if (!account.getUser().getId().equals(user.getId())) {
             throw new NotFoundNorValidException("You are not allowed to see this account's details");
         }
-        return new AccountResponse(account.getName(), account.getNumber(), account.getBalance());
+        return AccountDetailResponse.builder()
+                .id(account.getId())
+                .accountName(account.getName())
+                .accountNumber(account.getNumber())
+                .balance(account.getBalance())
+                .createdDate(account.getCreatedAt())
+                .build();
     }
 
     //to make jpa repository work, i made incoming null variables into empty string

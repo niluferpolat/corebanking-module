@@ -1,5 +1,6 @@
 package com.nilufer.minibank.controller;
 
+import com.nilufer.minibank.dto.AccountDetailResponse;
 import com.nilufer.minibank.dto.AccountRequest;
 import com.nilufer.minibank.dto.AccountResponse;
 import com.nilufer.minibank.dto.SearchAccountRequest;
@@ -29,8 +30,14 @@ public class AccountController {
         return ResponseEntity.ok(accountService.searchMyAccounts(request));
     }
 
+    @GetMapping
+    @ResponseBody
+    public List<AccountResponse> getAllAccountResponses(){
+     return accountService.getAllAccounts();
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateAccount(@PathVariable UUID id, @Valid @RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<AccountResponse> updateAccount(@PathVariable UUID id, @Valid @RequestBody AccountRequest accountRequest) {
         return ResponseEntity.ok(accountService.updateAccount(id, accountRequest));
     }
 
@@ -40,7 +47,7 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getAccountDetails(@PathVariable UUID id){
+    public ResponseEntity<AccountDetailResponse> getAccountDetails(@PathVariable UUID id){
         return ResponseEntity.ok(accountService.getAccountDetails(id));
     }
 }

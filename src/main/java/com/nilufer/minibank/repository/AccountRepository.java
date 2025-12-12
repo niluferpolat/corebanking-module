@@ -14,6 +14,8 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
 
     List<Account> findByNameContainingIgnoreCaseAndNumberContainingAndUser_Id(String name, String number, UUID id);
 
+    List<Account> findAllByUser_Id(UUID id);
+
     @Query("SELECT a FROM Account a WHERE LOWER(a.user.username) = LOWER(:username) AND a.number = :number")
     Optional<Account> findByUserUsernameIgnoreCaseAndNumber(@Param("username") String username, @Param("number") String number);
 }

@@ -1,6 +1,7 @@
 package com.nilufer.minibank.service;
 
 import com.nilufer.minibank.dto.TransactionRequest;
+import com.nilufer.minibank.dto.TransactionResponse;
 import com.nilufer.minibank.exception.NotFoundNorValidException;
 import com.nilufer.minibank.model.Account;
 import com.nilufer.minibank.model.Transaction;
@@ -26,7 +27,7 @@ public class TransactionService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    public Transaction transferTransaction(TransactionRequest transactionRequest) {
+    public TransactionResponse transferTransaction(TransactionRequest transactionRequest) {
         User senderUser = getCurrentUser(); //fetch senderUser
 
         Account fromAccount = accountRepository.findById(transactionRequest.getSenderAccountId())
@@ -45,6 +46,11 @@ public class TransactionService {
         //check sender user's balance status if balance is not enough, it throws error
         if (fromAccount.getBalance().compareTo(transactionRequest.getAmount()) < 0) {
             throw new NotFoundNorValidException("Insufficient balance");
+        }
+
+        //sender and recipient's account can't be same
+        if(fromAccount.equals(recipientAccount)){
+            throw new NotFoundNorValidException("Sender and recipient cannot be same");
         }
 
         //update balances
@@ -68,11 +74,14 @@ public class TransactionService {
             transactionRepository.save(transaction);
             throw new RuntimeException(e);
         }
-
-        return transaction;
+        String fromAccountInfo = fromAccount.getName() + "-" + fromAccount.getNumber();
+        String toAccountInfo = recipientAccount.getName() + "-" + recipientAccount.getNumber();
+        return new TransactionResponse(fromAccountInfo, toAccountInfo, transaction.getAmount(),
+                transaction.getTransactionDate(), transaction.getStatus());
     }
 
-    public List<Transaction> showTransactionHistories(UUID accountId) {
+
+    public List<TransactionResponse> showTransactionHistories(UUID accountId) {
         User currentUser = getCurrentUser();
 
         //account exists or not
@@ -83,7 +92,7 @@ public class TransactionService {
         if (!account.getUser().getId().equals(currentUser.getId())) {
             throw new NotFoundNorValidException("You are not allowed to view this account's transactions");
         }
-        return transactionRepository.findByFrom_IdOrTo_Id(account.getId(), account.getId());
+        return transactionRepository.findByFrom_IdOrTo_Id(account.getId(), account.getId()).stream().map(TransactionResponse::of).toList();
     }
 
     //Check authentication and retrieve the authenticated user
