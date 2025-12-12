@@ -75,3 +75,6 @@ API will start at http://localhost:8080/
 
 📖 API Documentation (Swagger)
 The swagger address is 👉 http://localhost:8080/swagger-ui/index.html
+
+# 4️⃣ Deployed URL
+https://corebanking-module-production.up.railway.app/swagger-ui/index.html
